@@ -30,8 +30,8 @@ jobs:
           echo DIRNAME=${{ github.workspace }} >> .env
       - name: Node Build
         run: npm run build
-      - run: mkdir tmp-dir && mv build tmp-dir/ && mv tmp-dir build
       - run: ls
+      - run: mkdir tmp-dir && mv build tmp-dir/ && mv tmp-dir build
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
