@@ -33,20 +33,12 @@ const minifyOptions = {
   keepClosingSlash: true,
 };
 
+const { platform } = process;
+const separator = path[platform === `win32` ? `win32` : `posix`].sep;
+
 const compileTemplate = (template, data) => handlebars.compile(template)(data);
 const getFile = (file) => fs.readFileSync(file, 'utf8');
-const getPath = (source = 'build', option = []) => {
-  console.log('=========')
-  console.log(source)
-  console.log(option)
-  const paths = [source, ...option]
-  console.log(paths)
-  console.log(process.env.DIRNAME)
-  console.log(...paths)
-  console.log(path.join(process.env.DIRNAME, ...paths))
-  console.log('=========')
-  return path.join(process.env.DIRNAME, ...paths)
-};
+const getPath = (source = 'build', option = []) => path.join(process.env.DIRNAME, ...[source, ...option]);
 const findFile = (data, match) => data.find((item) => item.split(match).length > 1);
 const isFile = (filePath) => fs.lstatSync(filePath).isFile();
 const getFiles = (source, data = []) =>
@@ -59,25 +51,20 @@ const getFiles = (source, data = []) =>
     .flat(2);
 
 const minifyCSS = () => {
-  console.log(62)
   const data = findFile(getFiles(getPath('src')), '.css');
-  console.log(data)
-  console.log(data.split('src\\')[1])
-  console.log(64)
   minify({
     compressor: cleanCSS,
     input: data,
-    output: getPath('build', [data.split('src\\')[1]]),
+    output: getPath('build', [data.split('src' + separator)[1]]),
   });
 };
 
 const minifyContent = (data, type = 'list') => {
-  console.log(73)
   const sourceFiles = getFiles(getPath('src'));
   const sectionTemplateFile = findFile(sourceFiles, `-${type}.hbs`);
   const indexTemplateFile = findFile(sourceFiles, 'index.hbs');
   const section = compileTemplate(getFile(sectionTemplateFile), data);
-  const stylePath = type !== 'list' ? '../' : '';
+  const stylePath = type !== 'list' ? '..' + separator : '';
   const title = type === 'list' ? 'Blog' : 'Blog | ' + data.title;
   const indexHtml = compileTemplate(getFile(indexTemplateFile), { section, path: stylePath, title });
 
@@ -86,7 +73,6 @@ const minifyContent = (data, type = 'list') => {
     content: indexHtml,
     options: minifyOptions,
   }).then((res) => {
-    console.log(87)
     fs.writeFile(getPath('build', type === 'list' ? ['index.html'] : [data.slug]), res, (err) => {
       if (err) console.log(err);
     });
@@ -94,13 +80,11 @@ const minifyContent = (data, type = 'list') => {
 };
 
 const cleanBuildDir = () => {
-  console.log(95)
   const buildDir = getPath('build');
-  console.log(97)
   const buildPostDir = getPath('build', ['posts']);
 
   if (!fs.existsSync(buildDir)) fs.mkdirSync(buildDir);
-  fs.readdirSync(buildDir).forEach((f) => fs.rmSync(`${buildDir}/${f}`, { recursive: true }));
+  fs.readdirSync(buildDir).forEach((f) => fs.rmSync(`${buildDir}${separator}${f}`, { recursive: true }));
   if (!fs.existsSync(buildPostDir)) fs.mkdirSync(buildPostDir);
 };
 
@@ -116,7 +100,7 @@ const minifyPosts = () => {
           .split('/')
           .map((item) => item.padStart(2, '0'))
           .join('');
-        const slug = 'posts\\' + item.split('posts\\')[1].split('.md')[0] + '.html';
+        const slug = 'posts' + separator + item.split('posts' + separator)[1].split('.md')[0] + '.html';
         minifyContent({ slug, title, tag, content }, 'main');
         let helper = date.split('/');
         return {
