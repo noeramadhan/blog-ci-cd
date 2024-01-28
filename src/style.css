@@ -11,6 +11,7 @@
   box-sizing: border-box;
 }
 
+/* Global Styles */
 html,
 body {
   font-family: monospace;
@@ -23,6 +24,7 @@ body {
   font-kerning: normal;
 }
 
+/* Headings */
 h1,
 h2,
 h3 {
@@ -44,6 +46,7 @@ h3 {
   font-size: 2.441rem;
 }
 
+/* Paragraphs and Small Text */
 p {
   font-size: 1rem;
   margin-top: 1rem;
@@ -55,6 +58,7 @@ small {
   color: rgba(var(--main), 0.5);
 }
 
+/* Container Styles */
 .app {
   max-width: 98ch;
   min-height: 100svh;
@@ -64,10 +68,12 @@ small {
   padding: calc(1rem * 2) calc(calc(1rem * 2) * 2);
 }
 
+/* Article Header Styles */
 .article-header {
   margin-bottom: 4rem;
 }
 
+/* Article Content Styles */
 .article-content p:last-of-type::after {
   font-size: 1rem;
   margin: 2rem 0 4rem 0;
@@ -80,14 +86,17 @@ small {
   margin-bottom: 3rem;
 }
 
+/* Article Meta Styles */
 .article-meta::before {
   content: '#';
 }
 
+/* Article List Styles */
 .article-list {
   list-style: none;
 }
 
+/* Article Item Styles */
 .article-item {
   display: none;
   flex-direction: column;
@@ -104,12 +113,14 @@ small {
   margin-top: 0.5rem;
 }
 
+/* Pagination Styles */
 .pagination {
   display: flex;
   gap: 2rem;
   margin-top: 3rem;
 }
 
+/* Link Styles */
 .link,
 .link:visited {
   color: rgb(var(--main));
@@ -124,6 +135,7 @@ small {
   text-underline-offset: 0.5ch;
 }
 
+/* Media Query for Small Screens */
 @media (max-width: 800px) {
   html,
   body {

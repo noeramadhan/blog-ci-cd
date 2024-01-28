@@ -1,12 +1,12 @@
 <section>
   <ul class='article-list'>
     {{#each post}}
-      <li class='article-item' id='article-{{@index}}'>
-        <small class='article-meta'>{{this.tag}}</small>
-        <a href='{{this.slug}}' class='link'>
-          {{this.title}}
-        </a>
-      </li>
+    <li class='article-item' id='article-{{@index}}'>
+      <small class='article-meta'>{{this.tag}}</small>
+      <a href='{{this.slug}}' class='link'>
+        {{this.title}}
+      </a>
+    </li>
     {{/each}}
   </ul>
   <div class='pagination'>
@@ -16,43 +16,28 @@
 </section>
 
 <script>
-window.addEventListener("load", function () {
+  window.addEventListener("load", function () {
+
     const urlParams = new URLSearchParams(window.location.search);
-
     const limit = 5;
-    const maxPage = Math.ceil(parseInt(document.querySelector('meta[name="posts"]').content) / limit);
-    const currentPage = urlParams.get('page') || 1;
+    const maxPage = Math.ceil(+document.querySelector('meta[name="posts"]').content / limit);
+    const currentPage = +urlParams.get('page') || 1;
 
-    if (currentPage == 1) {
-      document.getElementById('newer').style.display = "none";
-      document.getElementById('newer').style.pointerEvents = "none";
-      document.getElementById('newer').style.cursor = "default";
-      document.getElementById('newer').removeAttribute('href');
-    } else {
-      document.getElementById('newer').style.display = "inline";
-      document.getElementById('newer').setAttribute('href', `?page=${parseInt(currentPage) - 1}`)
+    function updateButton(buttonId, enable, page) {
+      const button = document.getElementById(buttonId);
+      button.style.display = enable ? "inline" : "none";
+      button.style.pointerEvents = enable ? "auto" : "none";
+      button.style.cursor = enable ? "pointer" : "default";
+      button.href = enable ? `?page=${page}` : null;
     }
+    updateButton('newer', currentPage > 1, +currentPage - 1);
+    updateButton('older', currentPage < maxPage, +currentPage + 1);
 
-    if (currentPage >= maxPage) {
-      document.getElementById('older').style.display = "none";
-      document.getElementById('older').style.pointerEvents = "none";
-      document.getElementById('older').style.cursor = "default";
-      document.getElementById('older').removeAttribute('href');
-    } else {
-      document.getElementById('older').style.display = "ilnine";
-      document.getElementById('older').setAttribute('href', `?page=${parseInt(currentPage) + 1}`)
-    }
+    Array.from(document.getElementsByClassName('article-item')).forEach((item, index) => {
+      const isVisible = index >= (currentPage - 1) * limit && index < currentPage * limit;
+      item.style.visibility = isVisible ? 'visible' : 'hidden';
+      item.style.display = isVisible ? 'flex' : 'none';
+    });
 
-    const itemData = document.getElementsByClassName('article-item')
-    const dataDisplay = Array.from(itemData).slice((currentPage - 1) * limit, ((currentPage - 1) * limit) + limit)
-    const dataHidden = Array.from(itemData).filter(item => !dataDisplay.includes(item));
-    dataDisplay.forEach(item => {
-      document.getElementById(item.getAttribute('id')).style.visibility = 'visible'
-      document.getElementById(item.getAttribute('id')).style.display = 'flex'
-    })
-    dataHidden.forEach(item => {
-      document.getElementById(item.getAttribute('id')).style.visibility = 'hidden'
-      document.getElementById(item.getAttribute('id')).style.display = 'none'
-    })
   });
 </script>
