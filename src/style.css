@@ -1,0 +1,150 @@
+:root {
+  --dark: 8, 8, 8;
+  --light: 240, 240, 240;
+  --main: var(--light);
+  --sec: var(--dark);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: monospace;
+  font-size: 18px;
+  line-height: 1.8;
+  color: rgb(var(--main));
+  background: rgb(var(--sec));
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'kern';
+  font-kerning: normal;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.022em;
+  margin-top: 2.25rem;
+  margin-bottom: 1rem;
+  text-wrap: pretty;
+}
+
+h1 {
+  font-size: 3.815rem;
+}
+h2 {
+  font-size: 3.052rem;
+}
+h3 {
+  font-size: 2.441rem;
+}
+
+p {
+  font-size: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+small {
+  font-size: 0.8rem;
+  color: rgba(var(--main), 0.5);
+}
+
+.app {
+  max-width: 98ch;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(1rem * 2) calc(calc(1rem * 2) * 2);
+}
+
+.article-header {
+  margin-bottom: 4rem;
+}
+
+.article-content p:last-of-type::after {
+  font-size: 1rem;
+  margin: 2rem 0 4rem 0;
+  display: block;
+  content: 'Tabik ∎';
+}
+
+.article-content .link:last-of-type {
+  display: inline-block;
+  margin-bottom: 3rem;
+}
+
+.article-meta::before {
+  content: '#';
+}
+
+.article-list {
+  list-style: none;
+}
+
+.article-item {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+  padding: calc(1rem * 1.2) 0;
+}
+
+.article-item .link {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.article-item .article-meta {
+  margin-top: 0.5rem;
+}
+
+.link,
+.link:visited {
+  color: rgb(var(--main));
+  text-decoration: underline;
+  text-underline-offset: 0.5ch;
+  text-decoration-style: dotted;
+  text-decoration-color: rgba(var(--main), 0.2);
+}
+
+.link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.5ch;
+}
+
+@media (max-width: 800px) {
+  html,
+  body {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  h1 {
+    font-size: 3.052rem;
+  }
+  h2 {
+    font-size: 2.441rem;
+  }
+  h3 {
+    font-size: 1.953rem;
+  }
+
+  .app {
+    padding: calc(1rem * 1.5) calc(calc(1rem * 1.5) * 1.5);
+  }
+
+  .article-header {
+    max-width: 40ch;
+  }
+
+  .article-item {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

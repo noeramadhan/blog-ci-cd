@@ -1,0 +1,15 @@
+name: Build and Push
+run-name: ${{ github.actor }} building blog and pushing
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '12'
+      - name: Node Install
+        run: npm ci
+      - name: Node Build
+        run: npm builder.js

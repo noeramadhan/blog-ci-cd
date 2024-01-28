@@ -1,0 +1,12 @@
+<section>
+  <ul class='article-list'>
+    {{#each post}}
+      <li class='article-item'>
+        <small class='article-meta'>{{this.tag}}</small>
+        <a href='{{this.slug}}' class='link'>
+          {{this.title}}
+        </a>
+      </li>
+    {{/each}}
+  </ul>
+</section>
