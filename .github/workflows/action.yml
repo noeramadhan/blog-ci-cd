@@ -14,8 +14,8 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
-          - name: create env file
-      - run: |
+      - name: create env file
+        run: |
           touch .env
           echo DIRNAME=${{ github.workspace }} >> .env
       - name: Node Build
