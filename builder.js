@@ -59,7 +59,9 @@ const getFiles = (source, data = []) =>
     .flat(2);
 
 const minifyCSS = () => {
+  console.log(62)
   const data = findFile(getFiles(getPath('src')), '.css');
+  console.log(64)
   minify({
     compressor: cleanCSS,
     input: data,
@@ -68,6 +70,7 @@ const minifyCSS = () => {
 };
 
 const minifyContent = (data, type = 'list') => {
+  console.log(73)
   const sourceFiles = getFiles(getPath('src'));
   const sectionTemplateFile = findFile(sourceFiles, `-${type}.hbs`);
   const indexTemplateFile = findFile(sourceFiles, 'index.hbs');
@@ -81,6 +84,7 @@ const minifyContent = (data, type = 'list') => {
     content: indexHtml,
     options: minifyOptions,
   }).then((res) => {
+    console.log(87)
     fs.writeFile(getPath('build', type === 'list' ? ['index.html'] : [data.slug]), res, (err) => {
       if (err) console.log(err);
     });
@@ -88,7 +92,9 @@ const minifyContent = (data, type = 'list') => {
 };
 
 const cleanBuildDir = () => {
+  console.log(95)
   const buildDir = getPath('build');
+  console.log(97)
   const buildPostDir = getPath('build', ['posts']);
 
   if (!fs.existsSync(buildDir)) fs.mkdirSync(buildDir);
