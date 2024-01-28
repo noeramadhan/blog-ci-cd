@@ -43,6 +43,7 @@ const minifyOptions = {
 const compileTemplate = (template, data) => handlebars.compile(template)(data);
 const getPath = (...paths) => path.resolve(path.dirname(fileURLToPath(import.meta.url)), ...paths);
 const findFile = (data, pattern) => data.find((file) => file.includes(pattern));
+const findFiles = (data, pattern) => data.filter((file) => file.includes(pattern));
 const getFile = (file) => fs.readFileSync(file, 'utf8');
 const getFiles = (source) =>
   fs.readdirSync(source).flatMap((fileName) => {
@@ -74,7 +75,6 @@ const minifyContent = async (data, type = 'list') => {
 
   const sectionTemplateFile = findFile(sourceDirFiles, `-${type}.hbs`);
   const indexTemplateFile = findFile(sourceDirFiles, 'index.hbs');
-
   const sectionHtml = compileTemplate(getFile(sectionTemplateFile), data);
 
   const indexData = { section: sectionHtml, path: stylePath, title };
@@ -90,15 +90,7 @@ const minifyContent = async (data, type = 'list') => {
   fs.writeFileSync(getPath('build', paths), result);
 };
 
-const cleanBuildDir = () => {
-  fs.rmSync(buildDirPath, { recursive: true, force: true });
-  [buildDirPath, buildPostDirPath].forEach((dir) => fs.mkdirSync(dir, { recursive: true }));
-};
-
-const buildAndMinify = async () => {
-  cleanBuildDir();
-  minifyStyle();
-
+const minifyPosts = () => {
   const postsData = getFiles(sourcePostDirPath).map((file) => {
     const content = converter.makeHtml(getFile(file));
     const { title, date } = converter.getMetadata();
@@ -124,4 +116,25 @@ const buildAndMinify = async () => {
   minifyContent({ post: sortedPostsData });
 };
 
-buildAndMinify();
+const minifyPage = () => {
+  findFiles(sourceDirFiles, '.html').map(async (file) => {
+    const [, pageFileName] = file.split(path.join('src', path.sep));
+    const result = await minify({
+      compressor: htmlMinifier,
+      content: getFile(file),
+      options: minifyOptions,
+    });
+
+    fs.writeFileSync(getPath('build', pageFileName), result);
+  });
+};
+
+const cleanBuildDir = () => {
+  fs.rmSync(buildDirPath, { recursive: true, force: true });
+  [buildDirPath, buildPostDirPath].forEach((dir) => fs.mkdirSync(dir, { recursive: true }));
+};
+
+cleanBuildDir();
+minifyStyle();
+minifyPosts();
+minifyPage();
