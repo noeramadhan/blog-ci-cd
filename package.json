@@ -8,5 +8,6 @@
   },
   "scripts": {
     "build": "node --env-file=.env builder.js"
-  }
+  },
+  "type": "module"
 }
