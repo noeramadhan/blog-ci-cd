@@ -36,10 +36,10 @@ const minifyOptions = {
 const separator = path[process.platform === `win32` ? `win32` : `posix`].sep;
 
 const compileTemplate = (template, data) => handlebars.compile(template)(data);
-const getFile = (file) => fs.readFileSync(file, 'utf8');
-const getPath = (source = 'build', option = []) => path.join(__dirname, ...[source, ...option]);
-const findFile = (data, match) => data.find((item) => item.split(match).length > 1);
+const getPath = (source = 'build', paths = []) => path.join(__dirname, ...[source, ...paths]);
+const findFile = (data, pattern) => data.find((file) => file.split(pattern).length > 1);
 const isFile = (filePath) => fs.lstatSync(filePath).isFile();
+const getFile = (file) => fs.readFileSync(file, 'utf8');
 const getFiles = (source, data = []) =>
   fs
     .readdirSync(source)
@@ -49,73 +49,88 @@ const getFiles = (source, data = []) =>
     })
     .flat(2);
 
+const sourceDirPath = getPath('src');
+const sourcePostDirPath = getPath('src', ['posts']);
+const buildDirPath = getPath('build');
+const buildPostDirPath = getPath('build', ['posts']);
+
+const sourceDirFiles = getFiles(sourceDirPath);
+
 const minifyCSS = () => {
-  const data = findFile(getFiles(getPath('src')), '.css');
+  const styleFile = findFile(sourceDirFiles, '.css');
+  const styleFileName = styleFile.split('src' + separator)[1];
+  const paths = [styleFileName];
   minify({
     compressor: cleanCSS,
-    input: data,
-    output: getPath('build', [data.split('src' + separator)[1]]),
+    input: styleFile,
+    output: getPath('build', paths),
+    options: minifyOptions,
   });
 };
 
 const minifyContent = (data, type = 'list') => {
-  const sourceFiles = getFiles(getPath('src'));
-  const sectionTemplateFile = findFile(sourceFiles, `-${type}.hbs`);
-  const indexTemplateFile = findFile(sourceFiles, 'index.hbs');
-  const section = compileTemplate(getFile(sectionTemplateFile), data);
   const stylePath = type !== 'list' ? '..' + separator : '';
   const title = type === 'list' ? 'Blog' : 'Blog | ' + data.title;
-  const indexHtml = compileTemplate(getFile(indexTemplateFile), { section, path: stylePath, title });
+
+  const sectionTemplateFile = findFile(sourceDirFiles, `-${type}.hbs`);
+  const indexTemplateFile = findFile(sourceDirFiles, 'index.hbs');
+
+  const sectionHtml = compileTemplate(getFile(sectionTemplateFile), data);
+
+  const indexData = { section: sectionHtml, path: stylePath, title };
+  const indexHtml = compileTemplate(getFile(indexTemplateFile), indexData);
 
   minify({
     compressor: htmlMinifier,
     content: indexHtml,
     options: minifyOptions,
-  }).then((res) => {
-    fs.writeFile(getPath('build', type === 'list' ? ['index.html'] : [data.slug]), res, (err) => {
-      if (err) console.log(err);
+  }).then((result) => {
+    const paths = [type === 'list' ? 'index.html' : data.slug];
+    fs.writeFile(getPath('build', paths), result, (error) => {
+      if (error) console.log(error);
     });
   });
 };
 
 const cleanBuildDir = () => {
-  const buildDir = getPath('build');
-  const buildPostDir = getPath('build', ['posts']);
-
-  if (!fs.existsSync(buildDir)) fs.mkdirSync(buildDir);
-  fs.readdirSync(buildDir).forEach((f) => fs.rmSync(`${buildDir}${separator}${f}`, { recursive: true }));
-  if (!fs.existsSync(buildPostDir)) fs.mkdirSync(buildPostDir);
+  if (!fs.existsSync(buildDirPath)) fs.mkdirSync(buildDirPath);
+  fs.readdirSync(buildDirPath).forEach((file) => fs.rmSync(`${buildDirPath}${separator}${file}`, { recursive: true }));
+  if (!fs.existsSync(buildPostDirPath)) fs.mkdirSync(buildPostDirPath);
 };
 
 const minifyPosts = () => {
   cleanBuildDir();
   minifyCSS();
-  minifyContent({
-    post: getFiles(getPath('src', ['posts']))
-      .map((item) => {
-        const content = converter.makeHtml(getFile(item));
-        const { title, date } = converter.getMetadata();
-        const tag = date
-          .split('/')
-          .map((item) => item.padStart(2, '0'))
-          .join('');
-        const slug = 'posts' + separator + item.split('posts' + separator)[1].split('.md')[0] + '.html';
-        minifyContent({ slug, title, tag, content }, 'main');
-        let helper = date.split('/');
-        return {
-          slug,
-          title,
-          tag,
-          date: new Date(helper[2], helper[1] - 1, helper[0]).toLocaleDateString('EN-US', {
-            year: 'numeric',
-            month: 'short',
-            day: '2-digit',
-          }),
-        };
-      })
-      .slice()
-      .sort((a, b) => new Date(b.date) - new Date(a.date)),
-  });
+
+  const postsData = getFiles(sourcePostDirPath)
+    .map((file) => {
+      const content = converter.makeHtml(getFile(file));
+      const { title, date } = converter.getMetadata();
+
+      const tag = date
+        .split('/')
+        .map((item) => item.padStart(2, '0'))
+        .join('');
+      const slug = 'posts' + separator + file.split('posts' + separator)[1].split('.md')[0] + '.html';
+
+      minifyContent({ slug, title, tag, content }, 'main');
+
+      const dateHelper = date.split('/');
+      return {
+        slug,
+        title,
+        tag,
+        date: new Date(dateHelper[2], dateHelper[1] - 1, dateHelper[0]).toLocaleDateString('EN-US', {
+          year: 'numeric',
+          month: 'short',
+          day: '2-digit',
+        }),
+      };
+    })
+    .slice()
+    .sort((oldPost, newPost) => new Date(newPost.date) - new Date(oldPost.date));
+
+  minifyContent({ post: postsData });
 };
 
 minifyPosts();
