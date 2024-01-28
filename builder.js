@@ -33,12 +33,11 @@ const minifyOptions = {
   keepClosingSlash: true,
 };
 
-const { platform } = process;
-const separator = path[platform === `win32` ? `win32` : `posix`].sep;
+const separator = path[process.platform === `win32` ? `win32` : `posix`].sep;
 
 const compileTemplate = (template, data) => handlebars.compile(template)(data);
 const getFile = (file) => fs.readFileSync(file, 'utf8');
-const getPath = (source = 'build', option = []) => path.join(process.env.DIRNAME, ...[source, ...option]);
+const getPath = (source = 'build', option = []) => path.join(__dirname, ...[source, ...option]);
 const findFile = (data, match) => data.find((item) => item.split(match).length > 1);
 const isFile = (filePath) => fs.lstatSync(filePath).isFile();
 const getFiles = (source, data = []) =>

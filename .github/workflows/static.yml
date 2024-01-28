@@ -1,4 +1,4 @@
-name: Deploy static content to Pages
+name: Deploy to Pages
 
 on:
   push:
@@ -22,18 +22,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20.10.0'
-      - name: Node Install
-        run: npm ci
-      - name: create env file
-        run: |
-          touch .env
-          echo DIRNAME=${{ github.workspace }} >> .env
-      - name: Node Build
-        run: npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/configure-pages@v4
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: ./build
       - name: Deploy to GitHub Pages
