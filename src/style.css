@@ -60,8 +60,12 @@ small {
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   padding: calc(1rem * 2) calc(calc(1rem * 2) * 2);
+}
+
+.app > .link {
+  margin-bottom: 5rem;
 }
 
 .article-header {

@@ -7,7 +7,7 @@
     "showdown": "^2.1.0"
   },
   "scripts": {
-    "build": "node --env-file=.env builder.js"
+    "build": "node builder.js"
   },
   "type": "module"
 }
