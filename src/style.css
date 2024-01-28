@@ -64,10 +64,6 @@ small {
   padding: calc(1rem * 2) calc(calc(1rem * 2) * 2);
 }
 
-.app > .link {
-  margin-bottom: 5rem;
-}
-
 .article-header {
   margin-bottom: 4rem;
 }
