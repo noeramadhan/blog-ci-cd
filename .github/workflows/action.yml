@@ -12,4 +12,4 @@ jobs:
       - name: Node Install
         run: npm ci
       - name: Node Build
-        run: npm builder.js
+        run: node builder.js
