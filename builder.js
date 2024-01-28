@@ -35,7 +35,7 @@ const minifyOptions = {
 
 const compileTemplate = (template, data) => handlebars.compile(template)(data);
 const getFile = (file) => fs.readFileSync(file, 'utf8');
-const getPath = (source = 'build', option = []) => path.join(__dirname, ...[source, ...option]);
+const getPath = (source = 'build', option = []) => path.join(process.env.DIRNAME, ...[source, ...option]);
 const findFile = (data, match) => data.find((item) => item.split(match).length > 1);
 const isFile = (filePath) => fs.lstatSync(filePath).isFile();
 const getFiles = (source, data = []) =>
@@ -79,7 +79,7 @@ const minifyContent = (data, type = 'list') => {
 const cleanBuildDir = () => {
   const buildDir = getPath('build');
   const buildPostDir = getPath('build', ['posts']);
-  
+
   if (!fs.existsSync(buildDir)) fs.mkdirSync(buildDir);
   fs.readdirSync(buildDir).forEach((f) => fs.rmSync(`${buildDir}/${f}`, { recursive: true }));
   if (!fs.existsSync(buildPostDir)) fs.mkdirSync(buildPostDir);
@@ -116,4 +116,4 @@ const minifyPosts = () => {
   });
 };
 
-minifyPosts();
+// minifyPosts();
