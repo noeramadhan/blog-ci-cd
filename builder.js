@@ -61,6 +61,8 @@ const getFiles = (source, data = []) =>
 const minifyCSS = () => {
   console.log(62)
   const data = findFile(getFiles(getPath('src')), '.css');
+  console.log(data)
+  console.log(data.split('src\\')[1])
   console.log(64)
   minify({
     compressor: cleanCSS,
