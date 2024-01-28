@@ -72,12 +72,13 @@ const minifyStyle = () => {
 const minifyContent = async (data, type = 'list') => {
   const stylePath = type !== 'list' ? `..${path.sep}` : '';
   const title = `Blog${type !== 'list' ? ` | ${data.title}` : ''}`;
+  const total = Array.isArray(data?.post) ? data.post.length : 1;
 
   const sectionTemplateFile = findFile(sourceDirFiles, `-${type}.hbs`);
   const indexTemplateFile = findFile(sourceDirFiles, 'index.hbs');
   const sectionHtml = compileTemplate(getFile(sectionTemplateFile), data);
 
-  const indexData = { section: sectionHtml, path: stylePath, title };
+  const indexData = { section: sectionHtml, path: stylePath, title, total };
   const indexHtml = compileTemplate(getFile(indexTemplateFile), indexData);
 
   const result = await minify({
