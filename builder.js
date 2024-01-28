@@ -116,4 +116,4 @@ const minifyPosts = () => {
   });
 };
 
-// minifyPosts();
+minifyPosts();
