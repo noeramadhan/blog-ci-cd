@@ -36,7 +36,15 @@ const minifyOptions = {
 const compileTemplate = (template, data) => handlebars.compile(template)(data);
 const getFile = (file) => fs.readFileSync(file, 'utf8');
 const getPath = (source = 'build', option = []) => {
+  console.log('=========')
+  console.log(source)
+  console.log(option)
   const paths = [source, ...option]
+  console.log(paths)
+  console.log(process.env.DIRNAME)
+  console.log(...paths)
+  console.log(path.join(process.env.DIRNAME, ...paths))
+  console.log('=========')
   return path.join(process.env.DIRNAME, ...paths)
 };
 const findFile = (data, match) => data.find((item) => item.split(match).length > 1);
