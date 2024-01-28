@@ -99,7 +99,7 @@ const buildAndMinify = async () => {
   cleanBuildDir();
   minifyStyle();
 
-  const postsData = await getFiles(sourcePostDirPath).map(async (file) => {
+  const postsData = getFiles(sourcePostDirPath).map((file) => {
     const content = converter.makeHtml(getFile(file));
     const { title, date } = converter.getMetadata();
     const tag = date
@@ -108,7 +108,7 @@ const buildAndMinify = async () => {
       .join('');
     const slug = file.replace(/^.*[\/\\]posts[\/\\](.*).md$/, `posts${path.sep}$1.html`);
 
-    await minifyContent({ slug, title, tag, content }, 'main');
+    minifyContent({ slug, title, tag, content }, 'main');
 
     const [day, month, year] = date.split('/');
     const formattedDate = new Date(year, month - 1, day).toLocaleDateString('en-US', {
@@ -121,7 +121,7 @@ const buildAndMinify = async () => {
   });
 
   const sortedPostsData = [...postsData].sort((oldPost, newPost) => new Date(newPost.date) - new Date(oldPost.date));
-  await minifyContent({ post: sortedPostsData });
+  minifyContent({ post: sortedPostsData });
 };
 
-await buildAndMinify();
+buildAndMinify();
